@@ -3,9 +3,7 @@
 	"version": "0.1.6",
 	"description": "jscodeshift transforms used to upgrade calypso code",
 	"main": "./api.js",
-	"bin": {
-		"calypso-codemods": "./index.js"
-	},
+	"bin": "./index.js",
 	"scripts": {
 		"test": "jest"
 	},
