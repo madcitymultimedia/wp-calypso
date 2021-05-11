@@ -30,8 +30,8 @@
 	"types": "dist/types",
 	"dependencies": {
 		"@babel/runtime": "^7.14.0",
-		"@wordpress/compose": "^3.25.3",
 		"@wordpress/components": "^13.0.3",
+		"@wordpress/compose": "^3.25.3",
 		"@wordpress/icons": "^2.10.3",
 		"@wordpress/react-i18n": "^1.0.3",
 		"classnames": "^2.2.6",
@@ -47,7 +47,6 @@
 		"@storybook/preset-scss": "^1.0.3",
 		"@testing-library/react": "^11.2.6",
 		"@testing-library/user-event": "^12.8.3",
-		"@testing-library/dom": "^7.28.1",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
 		"sass-loader": "^10.1.1"
