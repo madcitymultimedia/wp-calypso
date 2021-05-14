@@ -46,7 +46,11 @@
 		"react-dom": "^16.12.0"
 	},
 	"peerDependencies": {
-		"react": "^16.8"
+		"@wordpress/data": "^4.27.3",
+		"@wp-g2/create-styles": "*",
+		"react": "^16.8",
+		"react-native": "*",
+		"reakit-utils": "*"
 	},
 	"scripts": {
 		"clean": "tsc --build ./tsconfig.json ./tsconfig-cjs.json --clean && npx rimraf dist",

@@ -47,9 +47,14 @@
 		"@storybook/preset-scss": "^1.0.3",
 		"@testing-library/react": "^11.2.6",
 		"@testing-library/user-event": "^12.8.3",
+		"@wordpress/data": "^4.27.3",
+		"@wordpress/is-shallow-equal": "*",
+		"@wp-g2/create-styles": "*",
 		"react": "^16.12.0",
 		"react-dom": "^16.12.0",
-		"sass-loader": "^10.1.1"
+		"sass-loader": "^10.1.1",
+		"react-native": "*",
+		"reakit-utils": "*"
 	},
 	"scripts": {
 		"clean": "tsc --build ./tsconfig.json ./tsconfig-cjs.json --clean && npx rimraf dist",

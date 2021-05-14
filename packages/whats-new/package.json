@@ -44,6 +44,11 @@
 		"wpcom-proxy-request": "^6.0.0"
 	},
 	"peerDependencies": {
-		"react": "^16.8"
+		"@wordpress/data": "^4.27.3",
+		"@wp-g2/create-styles": "*",
+		"react": "^16.8",
+		"react-dom": "*",
+		"react-native": "*",
+		"reakit-utils": "*"
 	}
 }

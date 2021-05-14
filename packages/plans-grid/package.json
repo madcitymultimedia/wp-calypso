@@ -54,7 +54,11 @@
 		"@wordpress/data": "^4.27.3",
 		"@wordpress/element": "^2.20.3",
 		"@wordpress/i18n": "^3.20.0",
-		"react": "^16.8"
+		"@wp-g2/create-styles": "*",
+		"react": "^16.8",
+		"react-dom": "*",
+		"react-native": "*",
+		"reakit-utils": "*"
 	},
 	"private": true
 }

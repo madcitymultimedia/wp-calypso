@@ -51,7 +51,10 @@
 	},
 	"peerDependencies": {
 		"@wordpress/i18n": "^3.20.0",
-		"react": "^16.8"
+		"@wp-g2/create-styles": "*",
+		"react": "^16.8",
+		"react-native": "*",
+		"reakit-utils": "*"
 	},
 	"private": true
 }
