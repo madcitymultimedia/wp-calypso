@@ -21,7 +21,6 @@ import SortedGrid from 'calypso/components/sorted-grid';
 import { withLocalizedMoment } from 'calypso/components/localized-moment';
 import { getPreference } from 'calypso/state/preferences/selectors';
 import { selectMediaItems } from 'calypso/state/media/actions';
-import isFetchingNextPage from 'calypso/state/selectors/is-fetching-next-page';
 
 const noop = () => {};
 
@@ -31,7 +30,7 @@ export class MediaLibraryList extends React.Component {
 	static propTypes = {
 		site: PropTypes.object,
 		media: PropTypes.arrayOf( PropTypes.object ),
-		selectedItems: PropTypes.arrayOf( PropTypes.object ),
+		selectedItems: PropTypes.arrayOf( PropTypes.number ),
 		filter: PropTypes.string,
 		filterRequiresUpgrade: PropTypes.bool.isRequired,
 		search: PropTypes.string,
@@ -105,14 +104,14 @@ export class MediaLibraryList extends React.Component {
 		// seeking to select a single item
 		let selectedItems;
 		if ( this.props.single ) {
-			selectedItems = filter( this.props.selectedItems, { ID: item.ID } );
+			selectedItems = filter( this.props.selectedItems, item.ID );
 		} else {
 			selectedItems = clone( this.props.selectedItems );
 		}
 
-		const selectedItemsIndex = findIndex( selectedItems, { ID: item.ID } );
+		const selectedItemsIndex = findIndex( selectedItems, item.ID );
 		const isToBeSelected = -1 === selectedItemsIndex;
-		const selectedMediaIndex = findIndex( this.props.media, { ID: item.ID } );
+		const selectedMediaIndex = findIndex( this.props.media, item.ID );
 
 		let start = selectedMediaIndex;
 		let end = selectedMediaIndex;
@@ -123,12 +122,10 @@ export class MediaLibraryList extends React.Component {
 		}
 
 		for ( let i = start; i <= end; i++ ) {
-			const interimIndex = findIndex( selectedItems, {
-				ID: this.props.media[ i ].ID,
-			} );
+			const interimIndex = findIndex( selectedItems, this.props.media[ i ].ID );
 
 			if ( isToBeSelected && -1 === interimIndex ) {
-				selectedItems.push( this.props.media[ i ] );
+				selectedItems.push( this.props.media[ i ].ID );
 			} else if ( ! isToBeSelected && -1 !== interimIndex ) {
 				selectedItems.splice( interimIndex, 1 );
 			}
@@ -162,7 +159,7 @@ export class MediaLibraryList extends React.Component {
 	renderItem = ( item ) => {
 		const index = findIndex( this.props.media, { ID: item.ID } );
 		const selectedItems = this.props.selectedItems;
-		const selectedIndex = findIndex( selectedItems, { ID: item.ID } );
+		const selectedIndex = findIndex( selectedItems, item.ID );
 		const ref = this.getItemRef( item );
 
 		const showGalleryHelp =
@@ -263,7 +260,6 @@ export default connect(
 	( state, { site } ) => ( {
 		mediaScale: getPreference( state, 'mediaScale' ),
 		selectedItems: getMediaLibrarySelectedItems( state, site?.ID ),
-		isFetchingNextPage: isFetchingNextPage( state, site?.ID ),
 	} ),
 	{ selectMediaItems }
 )( withRtl( withLocalizedMoment( MediaLibraryList ) ) );
