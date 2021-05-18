@@ -47,10 +47,10 @@
 	},
 	"peerDependencies": {
 		"@wordpress/data": "^4.27.3",
-		"@wp-g2/create-styles": "*",
+		"@wp-g2/create-styles": "^0.0.164",
 		"react": "^16.8",
-		"react-native": "*",
-		"reakit-utils": "*"
+		"react-native": "^0.64.1",
+		"reakit-utils": "^0.15.1"
 	},
 	"scripts": {
 		"clean": "tsc --build ./tsconfig.json ./tsconfig-cjs.json --clean && npx rimraf dist",

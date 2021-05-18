@@ -59,8 +59,8 @@
 		"webpack": "^5.36.2"
 	},
 	"peerDependencies": {
-		"@wp-g2/create-styles": "*",
-		"react-native": "*",
-		"reakit-utils": "*"
+		"@wp-g2/create-styles": "^0.0.164",
+		"react-native": "^0.64.1",
+		"reakit-utils": "^0.15.1"
 	}
 }

@@ -39,7 +39,7 @@
 	},
 	"peerDependencies": {
 		"react": "^16.8",
-		"react-dom": "^16.8"
+		"react-dom": "^16.12.0"
 	},
 	"devDependencies": {
 		"@storybook/addon-actions": "^6.1.10",
