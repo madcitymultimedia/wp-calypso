@@ -307,6 +307,23 @@ const trackEditPostCreateTemplate = ( template ) => {
 
 	if ( isCreatingTemplate ) {
 		tracksRecordEvent( 'wpcom_block_editor_custom_post_template_created', {} );
+	} else {
+		tracksRecordEvent( 'wpcom_block_editor_custom_post_template_editing', {} );
+	}
+};
+
+/**
+ * Track when templates created via template UI are saved.
+ *
+ * @param {string} kind     Kind of the received entity.
+ * @param {string} name     Name of the received entity.
+ * @param {Object} recordId ID of the record.
+ */
+const trackEditPostSaveTemplate = ( kind, name, recordId ) => {
+	const editedEntity = select( 'core' ).getEditedEntityRecord( kind, name, recordId );
+
+	if ( editedEntity?.slug.startsWith( 'wp-custom-template' ) ) {
+		tracksRecordEvent( 'wpcom_block_editor_custom_post_template_saved', {} );
 	}
 };
 
@@ -375,6 +392,9 @@ const REDUX_TRACKING = {
 	},
 	'core/edit-post': {
 		__unstableSwitchToTemplateMode: trackEditPostCreateTemplate,
+	},
+	core: {
+		saveEditedEntityRecord: trackEditPostSaveTemplate,
 	},
 };
 
