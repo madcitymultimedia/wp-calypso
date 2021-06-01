@@ -279,7 +279,7 @@ export class SeoForm extends React.Component {
 			isFetchingSite,
 			siteId,
 			siteIsJetpack,
-			siteIsFreeAtomic,
+			siteIsAtomic,
 			siteIsComingSoon,
 			showAdvancedSeo,
 			showWebsiteMeta,
@@ -309,7 +309,7 @@ export class SeoForm extends React.Component {
 		const generalTabUrl = getGeneralTabUrl( slug );
 
 		const upsellProps =
-			siteIsJetpack && ! siteIsFreeAtomic
+			siteIsJetpack && ! siteIsAtomic
 				? {
 						title: translate( 'Boost your search engine ranking' ),
 						feature: FEATURE_SEO_PREVIEW_TOOLS,
@@ -482,7 +482,7 @@ const mapStateToProps = ( state ) => {
 	const siteId = getSelectedSiteId( state );
 	const siteIsJetpack = isJetpackSite( state, siteId );
 	const siteIsAtomic = isAtomicSite( state, siteId );
-	const siteIsFreeAtomic = isFreeAtomicSite( selectedSite, siteIsAtomic );
+	const siteIsFreeAtomic = isFreeAtomicSite( state, siteId );
 	// SEO Tools are available with Business plan on WordPress.com, and
 	// will soon be available on all Jetpack sites, so we're checking
 	// the availability of the module.
