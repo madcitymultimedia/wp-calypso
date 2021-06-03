@@ -13,7 +13,7 @@ import './setup';
 
 export function setupGoogleAnalyticsGtag( options ) {
 	setupGtag();
-	window.gtag( 'config', TRACKING_IDS.wpcomGoogleAnalyticsGtag, options );
+	window.gtag( 'config', TRACKING_IDS.googleAnalyticsGtag, options );
 }
 
 /**
@@ -67,7 +67,7 @@ export function getGoogleAnalyticsDefaultConfig() {
  * @param {string} pageTitle The title of the current page
  */
 export function fireGoogleAnalyticsPageView( urlPath, pageTitle ) {
-	window.gtag( 'config', TRACKING_IDS.wpcomGoogleAnalyticsGtag, {
+	window.gtag( 'config', TRACKING_IDS.googleAnalyticsGtag, {
 		...getGoogleAnalyticsDefaultConfig(),
 		page_path: urlPath,
 		page_title: pageTitle,
