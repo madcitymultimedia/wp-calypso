@@ -57,6 +57,10 @@ export function getGoogleAnalyticsDefaultConfig() {
 		custom_map: {
 			dimension3: 'client_id',
 		},
+		linker: {
+			accept_incoming: true,
+			domains: [ 'jetpack.com', 'cloud.jetpack.com', 'wordpress.com' ],
+		},
 	};
 }
 

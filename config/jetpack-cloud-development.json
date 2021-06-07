@@ -11,6 +11,7 @@
 	"login_url": "/connect",
 	"logout_url": "https://jetpack.com",
 	"jetpack_connect_url": "https://wordpress.com/jetpack/connect",
+	"google_analytics_key": "UA-114919094-11",
 	"site_name": "Jetpack: WordPress Security, Backups, Speed, & Growth",
 	"meta": [
 		{
@@ -28,6 +29,7 @@
 	],
 	"oauth_client_id": 68663,
 	"features": {
+		"ad-tracking": true,
 		"activity-log/v2": true,
 		"always_use_logout_url": true,
 		"current-site/domain-warning": false,
