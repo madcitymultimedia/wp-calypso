@@ -17,6 +17,7 @@ export const isFacebookEnabled = true;
 export const isBingEnabled = true;
 export const isGeminiEnabled = false;
 export const isWpcomGoogleAdsGtagEnabled = true;
+export const isJetpackGoogleAdsGtagEnabled = true;
 export const isQuantcastEnabled = false;
 export const isExperianEnabled = true;
 export const isOutbrainEnabled = true;
@@ -78,7 +79,9 @@ export const TRACKING_IDS = {
 	quantcast: 'p-3Ma3jHaQMB_bS',
 	quoraPixelId: '420845cb70e444938cf0728887a74ca1',
 	twitterPixelId: 'nvzbs',
-	googleAnalyticsGtag: config( 'google_analytics_key' ),
+	jetpackGoogleAdsGtagAddToCart: 'N/A', // "WordPress.com Jetpack product AddToCart"
+	jetpackGoogleAdsGtagPurchase: 'AW-937115306/BwV0CN_S3L0CEKr97L4D', // ""WordPress.com Jetpack product Purchase Gtag"
+	wpcomGoogleAnalyticsGtag: config( 'google_analytics_key' ),
 	wpcomFloodlightGtag: 'DC-6355556',
 	wpcomGoogleAdsGtag: 'AW-946162814',
 	wpcomGoogleAdsGtagSignupStart: 'AW-946162814/baDICKzQiq4BEP6YlcMD', // "WordPress.com Signup Start"
@@ -86,8 +89,6 @@ export const TRACKING_IDS = {
 	wpcomGoogleAdsGtagSignup: 'AW-946162814/5-NnCKy3xZQBEP6YlcMD', // "All Calypso Signups (WordPress.com)"
 	wpcomGoogleAdsGtagAddToCart: 'AW-946162814/MF4yCNi_kZYBEP6YlcMD', // "WordPress.com AddToCart"
 	wpcomGoogleAdsGtagPurchase: 'AW-946162814/taG8CPW8spQBEP6YlcMD', // "WordPress.com Purchase Gtag"
-	jetpackGoogleAdsGtagAddToCart: 'AW-946162814/MF4yCNi_kZYBEP6YlcMD', // "WordPress.com AddToCart"
-	jetpackGoogleAdsGtagPurchase: 'AW-946162814/taG8CPW8spQBEP6YlcMD', // "WordPress.com Purchase Gtag"
 };
 // This name is something we created to store a session id for DCM Floodlight session tracking
 export const DCM_FLOODLIGHT_SESSION_COOKIE_NAME = 'dcmsid';
