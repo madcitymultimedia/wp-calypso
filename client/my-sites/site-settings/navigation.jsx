@@ -17,6 +17,7 @@ import isJetpackSectionEnabledForSite from 'calypso/state/selectors/is-jetpack-s
 import isSiteFailedMigrationSource from 'calypso/state/selectors/is-site-failed-migration-source';
 import isRewindActive from 'calypso/state/selectors/is-rewind-active';
 import { getSelectedSite, getSelectedSiteId } from 'calypso/state/ui/selectors';
+import { siteHasSecuritySettingsTab } from './utils';
 
 export class SiteSettingsNavigation extends Component {
 	static propTypes = {
@@ -24,6 +25,7 @@ export class SiteSettingsNavigation extends Component {
 		// Connected props
 		site: PropTypes.object,
 		shouldShowJetpackSettings: PropTypes.bool,
+		hasSecuritySettingsTab: PropTypes.bool,
 	};
 
 	getStrings() {
@@ -39,7 +41,7 @@ export class SiteSettingsNavigation extends Component {
 	}
 
 	render() {
-		const { section, site, shouldShowJetpackSettings } = this.props;
+		const { section, site, shouldShowJetpackSettings, hasSecuritySettingsTab } = this.props;
 		const strings = this.getStrings();
 		const selectedText = strings[ section ];
 
@@ -59,7 +61,7 @@ export class SiteSettingsNavigation extends Component {
 						{ strings.general }
 					</NavItem>
 
-					{ site.jetpack && (
+					{ site.jetpack && hasSecuritySettingsTab && (
 						<NavItem
 							path={ `/settings/security/${ site.slug }` }
 							preloadSectionName="settings-security"
@@ -120,5 +122,6 @@ export default connect( ( state ) => {
 			( siteHasScanProductPurchase( state, siteId ) ||
 				isRewindActive( state, siteId ) ||
 				isSiteFailedMigrationSource( state, siteId ) ),
+		hasSecuritySettingsTab: siteHasSecuritySettingsTab( site, state, siteId ),
 	};
 } )( localize( SiteSettingsNavigation ) );
