@@ -6,6 +6,7 @@ import { useSelect, useDispatch } from '@automattic/composite-checkout';
 import { useTranslate } from 'i18n-calypso';
 import { useShoppingCart } from '@automattic/shopping-cart';
 import type { ContactDetailsType, ManagedContactDetails } from '@automattic/wpcom-checkout';
+import type { DomainContactDetails as DomainContactDetailsData } from '@automattic/shopping-cart';
 import { Field, styled } from '@automattic/wpcom-checkout';
 
 /**
@@ -20,6 +21,8 @@ import type { CountryListItem } from '../types/country-list-item';
 import TaxFields from './tax-fields';
 import DomainContactDetails from './domain-contact-details';
 import { isDomainProduct, isDomainTransfer, getDomain } from '@automattic/calypso-products';
+import getCountries from 'calypso/state/selectors/get-countries';
+import { useSelector } from 'react-redux';
 
 const ContactDetailsFormDescription = styled.p`
 	font-size: 14px;
@@ -51,11 +54,13 @@ export default function ContactDetailsContainer( {
 		updateDomainContactFields,
 		updateCountryCode,
 		updatePostalCode,
+		updateRequiredDomainFields,
 		updateEmail,
 	} = useDispatch( 'wpcom' );
 	const contactDetails = prepareDomainContactDetails( contactInfo );
 	const contactDetailsErrors = prepareDomainContactDetailsErrors( contactInfo );
 	const { email } = useSelect( ( select ) => select( 'wpcom' ).getContactInfo() );
+	const countries = useSelector( ( state ) => getCountries( state, 'domains' ) );
 
 	switch ( contactDetailsType ) {
 		case 'domain':
@@ -70,7 +75,14 @@ export default function ContactDetailsContainer( {
 						domainNames={ domainNames }
 						contactDetails={ contactDetails }
 						contactDetailsErrors={ contactDetailsErrors }
-						updateDomainContactFields={ updateDomainContactFields }
+						updateDomainContactFields={ ( details: DomainContactDetailsData ) => {
+							updateDomainContactFields( details );
+							updateRequiredDomainFields( {
+								postalCode:
+									countries?.find( ( country ) => country.code === details.countryCode )
+										?.has_postal_codes ?? true,
+							} );
+						} }
 						shouldShowContactDetailsValidationErrors={ shouldShowContactDetailsValidationErrors }
 						isDisabled={ isDisabled }
 						isLoggedOutCart={ isLoggedOutCart }
