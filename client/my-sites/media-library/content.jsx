@@ -394,6 +394,7 @@ export class MediaLibraryContent extends React.Component {
 				media={ this.props.media }
 				mediaHasNextPage={ this.props.hasNextPage }
 				mediaOnFetchNextPage={ this.props.fetchNextPage }
+				isLoading={ this.props.isLoading }
 				isFetchingNextPage={ this.props.isFetchingNextPage }
 			/>
 		);

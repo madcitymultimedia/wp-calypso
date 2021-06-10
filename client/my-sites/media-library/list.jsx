@@ -214,7 +214,12 @@ export class MediaLibraryList extends React.Component {
 			return <ListPlanUpgradeNudge filter={ this.props.filter } site={ this.props.site } />;
 		}
 
-		if ( ! this.props.mediaHasNextPage && this.props.media && 0 === this.props.media.length ) {
+		if (
+			! this.props.isLoading &&
+			! this.props.mediaHasNextPage &&
+			this.props.media &&
+			0 === this.props.media.length
+		) {
 			return React.createElement( this.props.search ? ListNoResults : ListNoContent, {
 				site: this.props.site,
 				filter: this.props.filter,
@@ -245,7 +250,7 @@ export class MediaLibraryList extends React.Component {
 				items={ this.props.media || [] }
 				itemsPerRow={ this.getItemsPerRow() }
 				lastPage={ ! this.props.mediaHasNextPage }
-				fetchingNextPage={ this.props.isFetchingNextPage }
+				fetchingNextPage={ this.props.isLoading || this.props.isFetchingNextPage }
 				guessedItemHeight={ this.getMediaItemHeight() }
 				fetchNextPage={ onFetchNextPage }
 				getItemRef={ this.getItemRef }

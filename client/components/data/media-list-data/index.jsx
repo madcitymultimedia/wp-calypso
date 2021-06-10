@@ -46,7 +46,7 @@ export const withMedia = createHigherOrderComponent(
 	( Component ) => ( props ) => {
 		const { site, postId, filter, search, source } = props;
 		const fetchOptions = getQuery( { search, source, filter, postId } );
-		const { data, hasNextPage, fetchNextPage, isFetchingNextPage } = useMediaQuery(
+		const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useMediaQuery(
 			site.ID,
 			fetchOptions
 		);
@@ -57,6 +57,7 @@ export const withMedia = createHigherOrderComponent(
 				media={ data?.media ?? [] }
 				hasNextPage={ hasNextPage }
 				fetchNextPage={ fetchNextPage }
+				isLoading={ isLoading }
 				isFetchingNextPage={ isFetchingNextPage }
 			/>
 		);

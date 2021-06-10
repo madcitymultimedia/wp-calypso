@@ -18,12 +18,8 @@ const useMediaQuery = ( siteId, fetchOptions = {}, queryOptions = {} ) => {
 
 	return useInfiniteQuery(
 		[ 'media', siteId, fetchOptions ],
-		async ( { pageParam } ) =>
-			wpcom.req.get( path, {
-				...defaults,
-				...fetchOptions,
-				page_handle: pageParam,
-			} ),
+		( { pageParam } ) =>
+			wpcom.req.get( path, { ...defaults, ...fetchOptions, page_handle: pageParam } ),
 		{
 			...queryOptions,
 			getNextPageParam: ( lastPage ) => lastPage.meta?.next_page,
