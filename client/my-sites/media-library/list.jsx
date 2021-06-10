@@ -4,7 +4,7 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRtl } from 'i18n-calypso';
-import { clone, filter, findIndex } from 'lodash';
+import { clone, filter } from 'lodash';
 import ReactDom from 'react-dom';
 import React from 'react';
 
@@ -109,9 +109,11 @@ export class MediaLibraryList extends React.Component {
 			selectedItems = clone( this.props.selectedItems );
 		}
 
-		const selectedItemsIndex = findIndex( selectedItems, item.ID );
+		const selectedItemsIndex = selectedItems.findIndex( ( id ) => id === item.ID );
 		const isToBeSelected = -1 === selectedItemsIndex;
-		const selectedMediaIndex = findIndex( this.props.media, item.ID );
+		const selectedMediaIndex = this.props.media.findIndex(
+			( mediaItem ) => mediaItem.ID === item.ID
+		);
 
 		let start = selectedMediaIndex;
 		let end = selectedMediaIndex;
@@ -122,7 +124,7 @@ export class MediaLibraryList extends React.Component {
 		}
 
 		for ( let i = start; i <= end; i++ ) {
-			const interimIndex = findIndex( selectedItems, this.props.media[ i ].ID );
+			const interimIndex = selectedItems.findIndex( ( id ) => id === this.props.media[ i ].ID );
 
 			if ( isToBeSelected && -1 === interimIndex ) {
 				selectedItems.push( this.props.media[ i ].ID );
@@ -157,9 +159,9 @@ export class MediaLibraryList extends React.Component {
 	};
 
 	renderItem = ( item ) => {
-		const index = findIndex( this.props.media, { ID: item.ID } );
-		const selectedItems = this.props.selectedItems;
-		const selectedIndex = findIndex( selectedItems, item.ID );
+		const { selectedItems, media } = this.props;
+		const index = media.findIndex( ( { ID } ) => ID === item.ID );
+		const selectedIndex = selectedItems.findIndex( ( id ) => id === item.ID );
 		const ref = this.getItemRef( item );
 
 		const showGalleryHelp =

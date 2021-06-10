@@ -199,7 +199,7 @@ export const selectedItems = ( state = {}, action ) => {
 			const { media, siteId } = action;
 			return {
 				...state,
-				[ siteId ]: media.map( ( mediaItem ) => mediaItem.ID ),
+				[ siteId ]: media,
 			};
 		}
 		case MEDIA_ITEM_CREATE: {
