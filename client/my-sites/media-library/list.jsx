@@ -4,7 +4,6 @@
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRtl } from 'i18n-calypso';
-import { clone, filter } from 'lodash';
 import ReactDom from 'react-dom';
 import React from 'react';
 
@@ -104,9 +103,9 @@ export class MediaLibraryList extends React.Component {
 		// seeking to select a single item
 		let selectedItems;
 		if ( this.props.single ) {
-			selectedItems = filter( this.props.selectedItems, item.ID );
+			selectedItems = this.props.selectedItems.filter( ( id ) => id === item.ID );
 		} else {
-			selectedItems = clone( this.props.selectedItems );
+			selectedItems = [ ...this.props.selectedItems ];
 		}
 
 		const selectedItemsIndex = selectedItems.findIndex( ( id ) => id === item.ID );
