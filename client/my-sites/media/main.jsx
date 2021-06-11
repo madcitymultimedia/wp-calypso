@@ -29,13 +29,14 @@ import { getMimeType } from 'calypso/lib/media/utils';
 import accept from 'calypso/lib/accept';
 import PageViewTracker from 'calypso/lib/analytics/page-view-tracker';
 import searchUrl from 'calypso/lib/search-url';
-import { editMedia, deleteMedia } from 'calypso/state/media/thunks';
+import { editMedia } from 'calypso/state/media/thunks';
 import { selectMediaItems, changeMediaSource, clearSite } from 'calypso/state/media/actions';
 
 /**
  * Style dependencies
  */
 import './style.scss';
+import withDeleteMedia from 'calypso/data/media/with-delete-media';
 
 class Media extends Component {
 	static propTypes = {
@@ -301,7 +302,10 @@ class Media extends Component {
 		const selected =
 			selectedItems && selectedItems.length ? selectedItems : this.props.selectedItems;
 
-		this.props.deleteMedia( site.ID, selected );
+		this.props.selectMediaItems( site.ID, [] );
+		selected
+			.filter( ( ID ) => typeof ID === 'number' )
+			.forEach( ( ID ) => this.props.deleteMedia( site.ID, ID ) );
 	};
 
 	getAnalyticsPath = () => {
@@ -452,8 +456,7 @@ const mapStateToProps = ( state, { mediaId } ) => {
 
 export default connect( mapStateToProps, {
 	editMedia,
-	deleteMedia,
 	selectMediaItems,
 	changeMediaSource,
 	clearSite,
-} )( localize( Media ) );
+} )( localize( withDeleteMedia( Media ) ) );
