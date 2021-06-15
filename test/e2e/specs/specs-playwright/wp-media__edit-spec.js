@@ -3,7 +3,7 @@
  */
 import { DataHelper, LoginFlow, MediaPage, SidebarComponent } from '@automattic/calypso-e2e';
 
-describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
+describe( DataHelper.createSuiteTitle( 'Media: Edit Media (Simple)' ), function () {
 	let mediaPage;
 
 	it( 'Log In', async function () {
@@ -16,23 +16,27 @@ describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
 		await sidebarComponent.gotoMenu( { heading: 'Media' } );
 	} );
 
-	it( 'See media content', async function () {
+	it( 'See media gallery', async function () {
 		mediaPage = await MediaPage.Expect( this.page );
 	} );
 
-	it( 'Select the first media item', async function () {
-		await mediaPage.click( { item: 1 } );
+	it( 'Show only images', async function () {
+		await mediaPage.clickTab( { name: 'Images' } );
 	} );
 
-	it( 'Click to edit selected media', async function () {
+	it( 'Select the first image item', async function () {
+		await mediaPage.clickOn( { item: 1 } );
+	} );
+
+	it( 'Click to edit selected image', async function () {
 		await mediaPage.editImage();
 	} );
 
-	it( 'Rotate image to the left', async function () {
-		await mediaPage.rotateImage( { direction: 'left' } );
+	it( 'Rotate image', async function () {
+		await mediaPage.rotateImage();
 	} );
 
 	it( 'Cancel image edit', async function () {
-		await mediaPage.cancelEdit();
+		await mediaPage.cancelImageEdit();
 	} );
 } );
