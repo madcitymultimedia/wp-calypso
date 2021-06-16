@@ -296,7 +296,6 @@ const trackBlockReplacement = ( originalBlockIds, blocks, ...args ) => {
  * @returns {void}
  */
 const trackInnerBlocksReplacement = ( rootClientId, blocks ) => {
-
 	const is_editing_custom_post_template = getIsEditingCustomPostTemplate();
 
 	/*
@@ -329,7 +328,6 @@ const trackInnerBlocksReplacement = ( rootClientId, blocks ) => {
 		}
 	}
 
-
 	trackBlocksHandler( blocks, 'wpcom_block_inserted', ( { name } ) => ( {
 		block_name: name,
 		blocks_replaced: true,
@@ -349,14 +347,13 @@ const trackInnerBlocksReplacement = ( rootClientId, blocks ) => {
  */
 const trackEditPostCreateTemplate = ( template ) => {
 	const isCreatingTemplate = !! template;
-	const editedTemplate = select( 'core/edit-post' ).getEditedPostTemplate();
 
 	if ( isCreatingTemplate ) {
 		tracksRecordEvent( 'wpcom_block_editor_custom_post_template_created', {
-			template_theme: editedTemplate.theme,
-			template_slug: editedTemplate.slug,
+			template_slug: template.slug,
 		} );
 	} else {
+		const editedTemplate = select( 'core/edit-post' ).getEditedPostTemplate();
 		tracksRecordEvent( 'wpcom_block_editor_custom_post_template_editing', {
 			template_theme: editedTemplate.theme,
 			template_slug: editedTemplate.slug,
