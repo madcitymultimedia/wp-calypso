@@ -374,6 +374,7 @@ const REDUX_TRACKING = {
 	core: {
 		undo: 'wpcom_block_editor_undo_performed',
 		redo: 'wpcom_block_editor_redo_performed',
+		saveEditedEntityRecord: trackEditPostSaveTemplate,
 	},
 	'core/block-editor': {
 		moveBlocksUp: getBlocksTracker( 'wpcom_block_moved_up' ),
@@ -392,9 +393,6 @@ const REDUX_TRACKING = {
 	},
 	'core/edit-post': {
 		__unstableSwitchToTemplateMode: trackEditPostCreateTemplate,
-	},
-	core: {
-		saveEditedEntityRecord: trackEditPostSaveTemplate,
 	},
 };
 
