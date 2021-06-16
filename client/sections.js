@@ -212,7 +212,7 @@ const sections = [
 	// or it'll be falsely associated with the latter section.
 	{
 		name: 'themes',
-		paths: [ '/themes', '/design' ],
+		paths: [ '/themes', `/([a-z]{2,3}|[a-z]{2}-[a-z]{2})/themes`, '/design' ],
 		module: 'calypso/my-sites/themes',
 		enableLoggedOut: true,
 		group: 'sites',
@@ -221,7 +221,7 @@ const sections = [
 	},
 	{
 		name: 'theme',
-		paths: [ '/theme' ],
+		paths: [ '/theme', `/([a-z]{2,3}|[a-z]{2}-[a-z]{2})/theme` ],
 		module: 'calypso/my-sites/theme',
 		enableLoggedOut: true,
 		group: 'sites',

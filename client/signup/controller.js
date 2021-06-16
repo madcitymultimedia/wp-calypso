@@ -101,10 +101,9 @@ export default {
 	redirectTests( context, next ) {
 		const isLoggedIn = isUserLoggedIn( context.store.getState() );
 		const currentFlowName = getFlowName( context.params, isLoggedIn );
-		currentFlowName === 'onboarding' && loadExperimentAssignment( 'refined_reskin_v2' );
 		if ( context.pathname.indexOf( 'new-launch' ) >= 0 ) {
 			next();
-		} else if ( currentFlowName === 'onboarding' ) {
+		} else if ( currentFlowName === 'onboarding' && config.isEnabled( 'signup/reskin' ) ) {
 			next();
 		} else if (
 			context.pathname.indexOf( 'domain' ) >= 0 ||
@@ -154,7 +153,7 @@ export default {
 			// Planned to be rerun, see pbmo2S-Bv-p2#comment-1382
 			// Commented out for eslint, to rerun next() has to be placed below this.
 			// if (
-			// 	( ! user() || ! user().get() ) &&
+			// 	! isLoggedIn &&
 			// 	-1 === context.pathname.indexOf( 'free' ) &&
 			// 	-1 === context.pathname.indexOf( 'personal' ) &&
 			// 	-1 === context.pathname.indexOf( 'premium' ) &&

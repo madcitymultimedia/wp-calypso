@@ -1,14 +1,10 @@
 /**
- * External dependencies
- */
-import store from 'store';
-
-/**
  * Internal dependencies
  */
-import userLibrary from 'calypso/lib/user';
-import { clearStorage } from 'calypso/lib/browser-storage';
-import { CURRENT_USER_CLEAR, CURRENT_USER_RECEIVE } from 'calypso/state/action-types';
+import { CURRENT_USER_RECEIVE } from 'calypso/state/action-types';
+import { clearStore } from 'calypso/lib/user/store';
+import { getCurrentUser } from 'calypso/state/current-user/selectors';
+import { getLogoutUrl } from 'calypso/lib/user/shared-utils';
 
 /**
  * Returns an action object that sets the current user object on the store
@@ -23,25 +19,14 @@ export function setCurrentUser( user ) {
 	};
 }
 
-/**
- * Returns an action object that clears the current user object from the store
- *
- * @returns {object}        Action object
- */
-export function clearCurrentUser() {
-	return async ( dispatch ) => {
-		// @TODO: Remove once `lib/user` has fully been reduxified
-		userLibrary().data = false;
+export function redirectToLogout( postLogoutRedirectUrl ) {
+	return async ( dispatch, getState ) => {
+		const userData = getCurrentUser( getState() );
+		const logoutUrl = getLogoutUrl( userData, postLogoutRedirectUrl );
 
-		/**
-		 * Clear internal user data and empty localStorage cache
-		 * to discard any user reference that the application may hold
-		 */
-		store.clearAll();
-		await clearStorage();
+		// Clear any data stored locally within the user data module or localStorage
+		await clearStore();
 
-		dispatch( {
-			type: CURRENT_USER_CLEAR,
-		} );
+		window.location.href = logoutUrl;
 	};
 }
