@@ -2,7 +2,6 @@
  * External dependencies
  */
 import React from 'react';
-import debugFactory from 'debug';
 import { useI18n } from '@wordpress/react-i18n';
 import { registerStore, useSelect, PaymentLogo } from '@automattic/composite-checkout';
 
@@ -19,14 +18,11 @@ import {
 	MastercardLogo,
 	AmexLogo,
 } from 'calypso/my-sites/checkout/composite-checkout/components/payment-logos';
-import CreditCardFields from 'calypso/jetpack-cloud/sections/partner-portal/payment-methods/credit-card-fields';
-import CreditCardPayButton from 'calypso/jetpack-cloud/sections/partner-portal/payment-methods/credit-card-pay-button';
+import CreditCardFields from 'calypso/jetpack-cloud/sections/partner-portal/credit-card-fields';
+import CreditCardPayButton from 'calypso/jetpack-cloud/sections/partner-portal/credit-card-fields/credit-card-pay-button';
 import { maskField } from 'calypso/lib/checkout';
 
-const debug = debugFactory( 'calypso:composite-checkout:credit-card' );
-
 export function createStoredCreditCardPaymentMethodStore() {
-	debug( 'creating a new credit card payment method store' );
 	const actions = {
 		changeBrand( payload ) {
 			return { type: 'BRAND_SET', payload };
