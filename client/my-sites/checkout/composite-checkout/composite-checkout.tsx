@@ -408,7 +408,8 @@ export default function CompositeCheckout( {
 		productAliasFromUrl,
 		updatedSiteSlug,
 		feature,
-		plan
+		plan,
+		isJetpackCheckout
 	);
 
 	const products = useSelector( ( state ) => getProductsList( state ) );
@@ -678,9 +679,11 @@ function getAnalyticsPath(
 	product: string | undefined,
 	selectedSiteSlug: string | undefined,
 	selectedFeature: string | undefined,
-	plan: string | undefined
+	plan: string | undefined,
+	isJetpackCheckout: boolean | undefined
 ): { analyticsPath: string; analyticsProps: Record< string, string > } {
 	debug( 'getAnalyticsPath', { purchaseId, product, selectedSiteSlug, selectedFeature, plan } );
+
 	let analyticsPath = '';
 	let analyticsProps = {};
 	if ( purchaseId && product ) {
@@ -701,6 +704,11 @@ function getAnalyticsPath(
 	} else {
 		analyticsPath = '/checkout/no-site';
 	}
+
+	if ( isJetpackCheckout ) {
+		analyticsPath = analyticsPath.replace( 'checkout', 'checkout/jetpack' );
+	}
+
 	return { analyticsPath, analyticsProps };
 }
 
