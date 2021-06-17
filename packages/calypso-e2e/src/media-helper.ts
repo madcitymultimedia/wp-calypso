@@ -1,8 +1,10 @@
 /**
  * External dependencies
  */
-import path from 'path';
 import config from 'config';
+import fs from 'fs';
+import path from 'path';
+import sanitize from 'sanitize-filename';
 
 /**
  * Internal dependencies
@@ -91,4 +93,29 @@ export function getFileName( {
  */
 export function getDateString(): string {
 	return new Date().getTime().toString();
+}
+
+export function deleteFile( filename: string ): void {
+	return fs.unlinkSync( filename );
+}
+
+export function getTestImage( filename: string ): Object {
+	filename = sanitize( filename + '.jpg' );
+	const originalFileName = 'image0.jpg';
+	const originalFileDir = path.resolve( __dirname, '../../../../test/e2e/image-uploads/' );
+	const originalFilePath = path.resolve( originalFileDir, originalFileName );
+
+	const newFileDir = path.resolve( __dirname, '../image-uploads' );
+	if ( ! fs.existsSync( newFileDir ) ) {
+		fs.mkdirSync( newFileDir, { recursive: true } );
+	}
+
+	const newFilePath = path.resolve( newFileDir, filename );
+	fs.copyFileSync( originalFilePath, newFilePath );
+
+	return {
+		fullpath: newFilePath,
+		dir: newFileDir,
+		filename: filename,
+	};
 }

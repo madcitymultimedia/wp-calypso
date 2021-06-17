@@ -20,6 +20,7 @@ const selectors = {
 	items: '.media-library__list-item',
 	placeholder: '.is-placeholder',
 	editButton: 'button[data-e2e-button="edit"]',
+	addNewButton: '.media-library__upload-button-input',
 
 	// Modal view
 	mediaModal: '.editor-media-modal__content',
@@ -149,5 +150,21 @@ export class MediaPage extends BaseContainer {
 		const cancelButton = await this.page.waitForSelector( selectors.imageEditorCancelButton );
 		await cancelButton.click();
 		await this.page.waitForSelector( selectors.mediaModal );
+	}
+
+	async upload( path: string ): Promise< void > {
+		const uploadButton = await this.page.waitForSelector( selectors.addNewButton );
+		const [ fileChooser ] = await Promise.all( [
+			this.page.waitForEvent( 'filechooser' ),
+			uploadButton.click(),
+		] );
+
+		await fileChooser.setFiles( path );
+	}
+
+	async confirmFileUploaded( filename: string ): Promise< void > {
+		const gallery = await this.page.waitForSelector( selectors.gallery );
+		await gallery.waitForElementState( 'stable' );
+		await gallery.waitForSelector( `[title="${ filename }"]` );
 	}
 }
