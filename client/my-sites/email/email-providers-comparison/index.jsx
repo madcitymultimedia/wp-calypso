@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
 import page from 'page';
 import PropTypes from 'prop-types';
+import titleCase from 'to-title-case';
 
 /**
  * Internal dependencies
@@ -25,6 +26,8 @@ import {
 	getSelectedDomain,
 } from 'calypso/lib/domains';
 import canUserPurchaseGSuite from 'calypso/state/selectors/can-user-purchase-gsuite';
+import DocumentHead from 'calypso/components/data/document-head';
+import EmailHeader from 'calypso/my-sites/email/email-header';
 import EmailProviderCard from './email-provider-card';
 import EmailExistingForwardsNotice from 'calypso/my-sites/email/email-existing-forwards-notice';
 import { fillInSingleCartItemAttributes } from 'calypso/lib/cart-values';
@@ -51,7 +54,8 @@ import {
 	hasGSuiteSupportedDomain,
 } from 'calypso/lib/gsuite';
 import { hasDiscount } from 'calypso/components/gsuite/gsuite-price';
-import { getSelectedSiteId, getSelectedSiteSlug } from 'calypso/state/ui/selectors';
+import { hasEmailForwards } from 'calypso/lib/domains/email-forwarding';
+import { getSelectedSite } from 'calypso/state/ui/selectors';
 import { getTitanProductName } from 'calypso/lib/titan';
 import GSuiteNewUserList from 'calypso/components/gsuite/gsuite-new-user-list';
 import { emailManagementForwarding, emailManagement } from 'calypso/my-sites/email/paths';
@@ -94,8 +98,7 @@ class EmailProvidersComparison extends React.Component {
 		gSuiteProduct: PropTypes.object,
 		isGSuiteSupported: PropTypes.bool.isRequired,
 		productsList: PropTypes.object.isRequired,
-		selectedSiteId: PropTypes.number,
-		selectedSiteSlug: PropTypes.string,
+		selectedSite: PropTypes.object,
 		titanMailProduct: PropTypes.object,
 	};
 
@@ -144,11 +147,11 @@ class EmailProvidersComparison extends React.Component {
 	};
 
 	goToEmailForwarding = () => {
-		const { currentRoute, selectedDomainName, selectedSiteSlug } = this.props;
+		const { currentRoute, selectedDomainName, selectedSite } = this.props;
 
 		recordTracksEvent( 'calypso_email_providers_add_click', { provider: 'email-forwarding' } );
 
-		page( emailManagementForwarding( selectedSiteSlug, selectedDomainName, currentRoute ) );
+		page( emailManagementForwarding( selectedSite.slug, selectedDomainName, currentRoute ) );
 	};
 
 	onTitanMailboxesChange = ( updatedMailboxes ) =>
@@ -192,7 +195,7 @@ class EmailProvidersComparison extends React.Component {
 			return;
 		}
 
-		const { productsList, selectedSiteSlug, shoppingCartManager } = this.props;
+		const { productsList, selectedSite, shoppingCartManager } = this.props;
 
 		const cartItem = titanMailMonthly( {
 			domain: domain.name,
@@ -216,7 +219,7 @@ class EmailProvidersComparison extends React.Component {
 					// Stay on the page to show the relevant error(s)
 					return;
 				}
-				this.isMounted && page( '/checkout/' + selectedSiteSlug );
+				this.isMounted && page( '/checkout/' + selectedSite.slug );
 			} );
 	};
 
@@ -249,7 +252,7 @@ class EmailProvidersComparison extends React.Component {
 			return;
 		}
 
-		const { productsList, selectedSiteSlug, shoppingCartManager } = this.props;
+		const { productsList, selectedSite, shoppingCartManager } = this.props;
 		const domains = [ domain ];
 		const googleProductSlug = config.isEnabled( 'google-workspace-migration' )
 			? GOOGLE_WORKSPACE_BUSINESS_STARTER_YEARLY
@@ -271,12 +274,16 @@ class EmailProvidersComparison extends React.Component {
 					// Stay on the page to show the relevant error(s)
 					return;
 				}
-				this.isMounted && page( '/checkout/' + selectedSiteSlug );
+				this.isMounted && page( '/checkout/' + selectedSite.slug );
 			} );
 	};
 
 	renderEmailForwardingCard() {
 		const { domain, translate } = this.props;
+
+		if ( hasEmailForwards( domain ) ) {
+			return null;
+		}
 
 		return (
 			<EmailProviderCard
@@ -475,13 +482,13 @@ class EmailProvidersComparison extends React.Component {
 	}
 
 	handleBack = () => {
-		const { selectedSiteSlug } = this.props;
+		const { selectedSite } = this.props;
 
-		page( emailManagement( selectedSiteSlug ) );
+		page( emailManagement( selectedSite.slug ) );
 	};
 
-	renderHeaderSection() {
-		const { selectedDomainName, translate } = this.props;
+	renderHeader() {
+		const { currentRoute, domain, selectedDomainName, selectedSite, translate } = this.props;
 
 		const image = {
 			path: emailIllustration,
@@ -495,9 +502,18 @@ class EmailProvidersComparison extends React.Component {
 			comment: '%(domainName)s is the domain name, e.g example.com',
 		};
 
+		const title = hasEmailForwards( domain )
+			? translate( 'Upgrade email' )
+			: translate( 'Add email' );
+
 		return (
 			<>
-				<HeaderCake onClick={ this.handleBack }>{ translate( 'Add Email' ) }</HeaderCake>
+				<DocumentHead title={ titleCase( title ) } />
+
+				<EmailHeader currentRoute={ currentRoute } selectedSite={ selectedSite } />
+
+				<HeaderCake onClick={ this.handleBack }>{ title }</HeaderCake>
+
 				<PromoCard
 					isPrimary
 					title={ translate( 'Get your own @%(domainName)s email address', translateArgs ) }
@@ -555,20 +571,15 @@ class EmailProvidersComparison extends React.Component {
 	}
 
 	render() {
-		const {
-			domainsWithForwards,
-			isGSuiteSupported,
-			selectedDomainName,
-			selectedSiteId,
-		} = this.props;
+		const { domainsWithForwards, isGSuiteSupported, selectedDomainName, selectedSite } = this.props;
 
 		return (
 			<Main wideLayout>
-				{ selectedSiteId && <QuerySiteDomains siteId={ selectedSiteId } /> }
+				{ selectedSite && <QuerySiteDomains siteId={ selectedSite.ID } /> }
 
 				<QueryEmailForwards domainName={ selectedDomainName } />
 
-				{ this.renderHeaderSection() }
+				{ this.renderHeader() }
 
 				{ this.renderDomainEligibilityNotice() }
 
@@ -601,8 +612,8 @@ export default connect(
 			? GOOGLE_WORKSPACE_BUSINESS_STARTER_YEARLY
 			: GSUITE_BASIC_SLUG;
 
-		const selectedSiteId = getSelectedSiteId( state );
-		const domains = getDomainsBySiteId( state, selectedSiteId );
+		const selectedSite = getSelectedSite( state );
+		const domains = getDomainsBySiteId( state, selectedSite.ID );
 		const domain = getSelectedDomain( {
 			domains,
 			selectedDomainName: ownProps.selectedDomainName,
@@ -620,8 +631,7 @@ export default connect(
 			gSuiteProduct: getProductBySlug( state, productSlug ),
 			isGSuiteSupported,
 			productsList: getProductsList( state ),
-			selectedSiteId,
-			selectedSiteSlug: getSelectedSiteSlug( state ),
+			selectedSite,
 			titanMailProduct: getProductBySlug( state, TITAN_MAIL_MONTHLY_SLUG ),
 		};
 	},
