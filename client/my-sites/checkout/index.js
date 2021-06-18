@@ -9,6 +9,7 @@ import page from 'page';
 import {
 	checkout,
 	checkoutPending,
+	checkoutSiteless,
 	checkoutThankYou,
 	gsuiteNudge,
 	upsellNudge,
@@ -40,6 +41,10 @@ export default function () {
 			);
 		}
 
+		if ( isEnabled( 'jetpack/siteless-checkout' ) ) {
+			page( '/checkout/jetpack/:productSlug', noSite, checkoutSiteless, makeLayout, clientRender );
+		}
+
 		page( '/checkout/offer-quickstart-session', upsellNudge, makeLayout, clientRender );
 
 		page( '/checkout/no-site/:lang?', noSite, checkout, makeLayout, clientRender );
@@ -59,6 +64,10 @@ export default function () {
 			makeLayout,
 			clientRender
 		);
+	}
+
+	if ( isEnabled( 'jetpack/siteless-checkout' ) ) {
+		page( '/checkout/jetpack/:productSlug', noSite, checkoutSiteless, makeLayout, clientRender );
 	}
 
 	// Show these paths only for logged in users
