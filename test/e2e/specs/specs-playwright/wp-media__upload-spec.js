@@ -30,7 +30,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Upload' ), function () {
 
 			it( 'Log In', async function () {
 				const loginFlow = new LoginFlow( this.page, user );
-				await loginFlow.login();
+				await loginFlow.logIn();
 			} );
 
 			it( 'Navigate to Media', async function () {
@@ -73,7 +73,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Upload' ), function () {
 
 		it( 'Log In', async function () {
 			const loginFlow = new LoginFlow( this.page );
-			await loginFlow.login();
+			await loginFlow.logIn();
 		} );
 
 		it( 'Navigate to Media', async function () {
