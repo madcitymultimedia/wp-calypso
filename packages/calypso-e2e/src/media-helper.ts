@@ -2,7 +2,7 @@
  * External dependencies
  */
 import config from 'config';
-import fs from 'fs';
+import fs from 'fs-extra';
 import path from 'path';
 import sanitize from 'sanitize-filename';
 
@@ -102,7 +102,7 @@ export function getDateString(): string {
  * @returns {void} No return value.
  */
 export function deleteFile( filePath: string ): void {
-	return fs.unlinkSync( filePath );
+	fs.removeSync( filePath );
 }
 
 /**
@@ -129,7 +129,7 @@ export function createTestFile( {
 	// EPERM: operation not permitted
 	const testFilePath = path.resolve( sourceFileDir, testFileName );
 	// Copy the source file specified to testFilePath, creating a clone differing only by name.
-	fs.copyFileSync( sourceFilePath, testFilePath );
+	fs.copySync( sourceFilePath, testFilePath );
 
 	return testFilePath;
 }

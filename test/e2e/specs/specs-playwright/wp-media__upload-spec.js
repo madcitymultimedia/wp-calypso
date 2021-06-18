@@ -44,7 +44,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Upload' ), function () {
 
 			it( 'Upload image then confirm', async function () {
 				await mediaPage.upload( testFiles.image );
-				await mediaPage.confirmUpload( testFiles.image );
+				await mediaPage.confirmUploadSuccessful( testFiles.image );
 			} );
 
 			it( 'Upload audio then confirm', async function () {
@@ -90,7 +90,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Upload' ), function () {
 		} );
 
 		it( 'Upload rejected for unsupported file', async function () {
-			await mediaPage.uploadRejected( testFile );
+			await mediaPage.confirmUploadRejected( testFile );
 		} );
 	} );
 } );
