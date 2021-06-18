@@ -121,13 +121,13 @@ export function createTestFile( {
 	sourceFileName: string;
 } ): string {
 	testFileName = sanitize( testFileName );
-	const sourceFileDir = path.resolve( __dirname, '../../../../test/e2e/image-uploads/' );
-	const sourceFilePath = path.resolve( sourceFileDir, sourceFileName );
+	const sourceFileDir = path.join( __dirname, '../../../../test/e2e/image-uploads/' );
+	const sourceFilePath = path.join( sourceFileDir, sourceFileName );
 
 	// Generated test file will also go under the source directory.
 	// Attempting to copy the file elsewhere will trigger the following error on TeamCity:
 	// EPERM: operation not permitted
-	const testFilePath = path.resolve( sourceFileDir, testFileName );
+	const testFilePath = path.join( sourceFileDir, testFileName );
 	// Copy the source file specified to testFilePath, creating a clone differing only by name.
 	fs.copySync( sourceFilePath, testFilePath );
 
