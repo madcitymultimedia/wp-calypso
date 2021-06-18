@@ -95,27 +95,61 @@ export function getDateString(): string {
 	return new Date().getTime().toString();
 }
 
-export function deleteFile( filename: string ): void {
-	return fs.unlinkSync( filename );
+/**
+ * Given a full path to file on disk, remove the file.
+ *
+ * @param {string} filePath Full path on disk.
+ * @returns {void} No return value.
+ */
+export function deleteFile( filePath: string ): void {
+	return fs.unlinkSync( filePath );
 }
 
-export function getTestImage( filename: string ): Object {
-	filename = sanitize( filename + '.jpg' );
-	const originalFileName = 'image0.jpg';
-	const originalFileDir = path.resolve( __dirname, '../../../../test/e2e/image-uploads/' );
-	const originalFilePath = path.resolve( originalFileDir, originalFileName );
+/**
+ * Creates a temporary test file by cloning a source file under a new name.
+ *
+ * @param {{[key: string]: string}} param0 Parameter object.
+ * @param {string} param0.testFileName Basename of the test file to be generated.
+ * @param {string} param0.sourceFileName Basename of the source file to be cloned.
+ * @returns {string} Full path to the generated test file.
+ */
+export function createTestFile( {
+	testFileName,
+	sourceFileName,
+}: {
+	testFileName: string;
+	sourceFileName: string;
+} ): string {
+	testFileName = sanitize( testFileName );
+	const sourceFileDir = path.resolve( __dirname, '../../../../test/e2e/image-uploads/' );
+	const sourceFilePath = path.resolve( sourceFileDir, sourceFileName );
 
-	const newFileDir = path.resolve( __dirname, '../image-uploads' );
-	if ( ! fs.existsSync( newFileDir ) ) {
-		fs.mkdirSync( newFileDir, { recursive: true } );
-	}
+	// Generated test file will also go under the source directory.
+	// Attempting to copy the file elsewhere will trigger the following error on TeamCity:
+	// EPERM: operation not permitted
+	const testFilePath = path.resolve( sourceFileDir, testFileName );
+	// Copy the source file specified to testFilePath, creating a clone differing only by name.
+	fs.copyFileSync( sourceFilePath, testFilePath );
 
-	const newFilePath = path.resolve( newFileDir, filename );
-	fs.copyFileSync( originalFilePath, newFilePath );
+	return testFilePath;
+}
 
-	return {
-		fullpath: newFilePath,
-		dir: newFileDir,
-		filename: filename,
-	};
+/**
+ * Returns the path to a generated temporary JPEG image file.
+ *
+ * @param {string} filename Basename used for the generated test file.
+ * @returns {string} Full path on disk to the generated test file.
+ */
+export function getTestImage( filename: string ): string {
+	return createTestFile( { testFileName: filename, sourceFileName: 'image0.jpg' } );
+}
+
+/**
+ * Returns the path to a generated temporary MP3 audio file.
+ *
+ * @param {string} filename Basename used for the generated test file.
+ * @returns {string} Full path on disk to the generated test file.
+ */
+export function getTestAudio( filename: string ): string {
+	return createTestFile( { testFileName: filename, sourceFileName: 'bees.mp3' } );
 }

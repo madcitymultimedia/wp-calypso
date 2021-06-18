@@ -1,4 +1,10 @@
 /**
+ * External dependencies
+ */
+import path from 'path';
+import assert from 'assert';
+
+/**
  * Internal dependencies
  */
 import { BaseContainer } from '../base-container';
@@ -21,6 +27,7 @@ const selectors = {
 	placeholder: '.is-placeholder',
 	editButton: 'button[data-e2e-button="edit"]',
 	addNewButton: '.media-library__upload-button-input',
+	uploadRejectionNotice: 'text=could not be uploaded because the file type is not supported',
 
 	// Modal view
 	mediaModal: '.editor-media-modal__content',
@@ -152,19 +159,44 @@ export class MediaPage extends BaseContainer {
 		await this.page.waitForSelector( selectors.mediaModal );
 	}
 
-	async upload( path: string ): Promise< void > {
-		const uploadButton = await this.page.waitForSelector( selectors.addNewButton );
-		const [ fileChooser ] = await Promise.all( [
-			this.page.waitForEvent( 'filechooser' ),
-			uploadButton.click(),
-		] );
-
-		await fileChooser.setFiles( path );
+	/**
+	 * Uploads the file to the Media gallery.
+	 *
+	 * @param {string} fullPath Full path to the file on disk.
+	 * @returns {Promise<void>} No return value.
+	 */
+	async upload( fullPath: string ): Promise< void > {
+		await this.page.setInputFiles( selectors.addNewButton, fullPath );
 	}
 
-	async confirmFileUploaded( filename: string ): Promise< void > {
+	/**
+	 * Confirms the media file upload was successful.
+	 *
+	 * @param {string} fullPath Full path on disk.
+	 * @returns {Promise<void>} No return value.
+	 */
+	async confirmUploadSuccessful( fullPath: string ): Promise< void > {
+		// Extract the basename and extension of the file from the full path.
+		const basename = path.basename( fullPath );
 		const gallery = await this.page.waitForSelector( selectors.gallery );
 		await gallery.waitForElementState( 'stable' );
-		await gallery.waitForSelector( `[title="${ filename }"]` );
+		// Each media item has the attribute `title=<filename.extension>` and Playwright
+		// is able to select elements by attribute.
+		await gallery.waitForSelector( `[title="${ basename }"]` );
+	}
+
+	/**
+	 * Confirms the media file upload was rejected.
+	 *
+	 * @param {string} fullPath Full path on disk.
+	 * @returns {Promise<void>} No return value.
+	 */
+	async confirmUploadRejected( fullPath: string ): Promise< void > {
+		await this.page.waitForSelector( selectors.uploadRejectionNotice );
+		const basename = path.basename( fullPath );
+		const gallery = await this.page.waitForSelector( selectors.gallery );
+		await gallery.waitForElementState( 'stable' );
+		const match = await gallery.$$( `[title="${ basename }"]` );
+		assert.strictEqual( match.length, 0 );
 	}
 }
