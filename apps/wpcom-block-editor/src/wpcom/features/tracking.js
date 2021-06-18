@@ -365,14 +365,16 @@ const trackErrorNotices = ( content, options ) =>
 		notice_options: JSON.stringify( options ), // Returns undefined if options is undefined.
 	} );
 
-const trackSaveEntityRecord = ( kind, name ) => {
+const trackSaveEntityRecord = ( kind, name, record ) => {
 	if (
 		document.querySelector( '.edit-site-template-part-converter__modal' ) &&
 		kind === 'postType' &&
 		name === 'wp_template_part'
 	) {
 		ignoreNextReplaceBlocksAction = true;
-		tracksRecordEvent( 'wpcom_block_editor_convert_to_template_part' );
+		tracksRecordEvent( 'wpcom_block_editor_convert_to_template_part', {
+			variation_slug: record.area,
+		} );
 	}
 };
 
