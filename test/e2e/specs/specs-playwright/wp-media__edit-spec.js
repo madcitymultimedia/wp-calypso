@@ -9,7 +9,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
 
 		it( 'Log In', async function () {
 			const loginFlow = new LoginFlow( this.page );
-			await loginFlow.login();
+			await loginFlow.logIn();
 		} );
 
 		it( 'Navigate to Media', async function () {
@@ -47,7 +47,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
 
 		it( 'Log In', async function () {
 			const loginFlow = new LoginFlow( this.page, 'wooCommerceUser' );
-			await loginFlow.login();
+			await loginFlow.logIn();
 		} );
 
 		it( 'Navigate to Media', async function () {
