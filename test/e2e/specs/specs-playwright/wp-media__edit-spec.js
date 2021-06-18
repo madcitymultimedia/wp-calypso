@@ -14,7 +14,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
 
 		it( 'Navigate to Media', async function () {
 			const sidebarComponent = await SidebarComponent.Expect( this.page );
-			await sidebarComponent.gotoMenu( { heading: 'Media' } );
+			await sidebarComponent.gotoMenu( { item: 'Media' } );
 		} );
 
 		it( 'See media gallery', async function () {
@@ -52,7 +52,7 @@ describe( DataHelper.createSuiteTitle( 'Media: Edit Media' ), function () {
 
 		it( 'Navigate to Media', async function () {
 			const sidebarComponent = await SidebarComponent.Expect( this.page );
-			await sidebarComponent.gotoMenu( { heading: 'Media' } );
+			await sidebarComponent.gotoMenu( { item: 'Media' } );
 		} );
 
 		it( 'See media gallery', async function () {
