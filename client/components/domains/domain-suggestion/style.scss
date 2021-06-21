@@ -353,6 +353,8 @@ body.is-section-signup.is-white-signup {
 			}
 
 			.domain-registration-suggestion__domain-title {
+				font-size: $font-body;
+
 				@include break-xlarge {
 					line-height: 3rem;
 				}
