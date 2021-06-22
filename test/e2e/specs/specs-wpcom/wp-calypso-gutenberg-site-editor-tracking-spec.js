@@ -168,6 +168,7 @@ describe( `[${ host }] Calypso Gutenberg Site Editor Tracking: (${ screenSize })
 
 			await editor.addBlock( 'Template Part' );
 			await clearEventsStack( this.driver );
+			await editor.dismissNotices();
 
 			await editor.runInCanvas( async () => {
 				await driverHelper.clickWhenClickable(
@@ -199,6 +200,7 @@ describe( `[${ host }] Calypso Gutenberg Site Editor Tracking: (${ screenSize })
 			// so the insert event won't intefere with our asserts.
 			const blockId = await editor.addBlock( 'Template Part' );
 			await clearEventsStack( this.driver );
+			await editor.dismissNotices();
 
 			// Add a template part block and select an existing template part.
 			// Make sure the template part is loaded before moving on.
