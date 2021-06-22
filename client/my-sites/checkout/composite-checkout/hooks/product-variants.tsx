@@ -1,19 +1,14 @@
 /**
  * External dependencies
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { styled } from '@automattic/wpcom-checkout';
 import { useTranslate } from 'i18n-calypso';
 import { useSelector, useDispatch } from 'react-redux';
 import formatCurrency, { CURRENCIES } from '@automattic/format-currency';
 import debugFactory from 'debug';
-
-/**
- * Internal dependencies
- */
-import { requestPlans } from 'calypso/state/plans/actions';
-import { computeProductsWithPrices } from 'calypso/state/products-list/selectors';
 import {
+	getTermDuration,
 	getPlan,
 	findPlansKeys,
 	GROUP_WPCOM,
@@ -22,8 +17,16 @@ import {
 	TERM_BIENNIALLY,
 	TERM_MONTHLY,
 } from '@automattic/calypso-products';
-import { requestProductsList } from 'calypso/state/products-list/actions';
 import type { Plan } from '@automattic/calypso-products';
+
+/**
+ * Internal dependencies
+ */
+import { requestPlans } from 'calypso/state/plans/actions';
+import { computeProductsWithPrices } from 'calypso/state/products-list/selectors';
+import { requestProductsList } from 'calypso/state/products-list/actions';
+import { getPlansBySiteId } from 'calypso/state/sites/plans/selectors/get-plans-by-site';
+import canUpgradeToPlan from 'calypso/state/selectors/can-upgrade-to-plan';
 import type { WPCOMProductVariant } from '../components/item-variation-picker';
 
 const debug = debugFactory( 'calypso:composite-checkout:product-variants' );
@@ -38,6 +41,16 @@ export interface AvailableProductVariant {
 	priceFullBeforeDiscount: number;
 	priceFull: number;
 	priceFinal: number;
+}
+
+export interface SitePlanData {
+	currentPlan: boolean;
+	interval: number;
+	productSlug: string;
+}
+
+interface SitesPlansResult {
+	data: SitePlanData[];
 }
 
 const Discount = styled.span`
@@ -67,9 +80,17 @@ export function useGetProductVariants(
 	const translate = useTranslate();
 	const reduxDispatch = useDispatch();
 
+	const sitePlans: SitesPlansResult | null = useSelector( ( state ) =>
+		siteId ? getPlansBySiteId( state, siteId ) : null
+	);
+	const activePlan = sitePlans?.data?.find( ( plan ) => plan.currentPlan );
+	const isProductAnUpgrade = useSelector( ( state ) =>
+		siteId ? canUpgradeToPlan( state, siteId, productSlug ) : false
+	);
+
 	const variantProductSlugs = useVariantPlanProductSlugs( productSlug );
 
-	const productsWithPrices = useSelector( ( state ) => {
+	const productsWithPrices: AvailableProductVariant[] = useSelector( ( state ) => {
 		return computeProductsWithPrices( state, siteId, variantProductSlugs, 0, {} );
 	} );
 
@@ -86,18 +107,59 @@ export function useGetProductVariants(
 		}
 	}, [ shouldFetchProducts, haveFetchedProducts, reduxDispatch ] );
 
-	const getProductVariantFromAvailableVariant = (
-		variant: AvailableProductVariant
-	): WPCOMProductVariant => {
-		return {
-			variantLabel: getTermText( variant.plan.term, translate ),
-			variantDetails: <VariantPrice variant={ variant } />,
-			productSlug: variant.planSlug,
-			productId: variant.product.product_id,
-		};
-	};
+	const getProductVariantFromAvailableVariant = useCallback(
+		( variant: AvailableProductVariant ): WPCOMProductVariant => {
+			return {
+				variantLabel: getTermText( variant.plan.term, translate ),
+				variantDetails: <VariantPrice variant={ variant } />,
+				productSlug: variant.planSlug,
+				productId: variant.product.product_id,
+			};
+		},
+		[ translate ]
+	);
 
-	return productsWithPrices.map( getProductVariantFromAvailableVariant );
+	return useMemo( () => {
+		debug( 'found unfiltered variants', productsWithPrices );
+		return productsWithPrices
+			.filter( ( product ) =>
+				isVariantAllowed( product, activePlan?.interval, isProductAnUpgrade )
+			)
+			.map( getProductVariantFromAvailableVariant );
+	}, [
+		activePlan?.interval,
+		isProductAnUpgrade,
+		getProductVariantFromAvailableVariant,
+		productsWithPrices,
+	] );
+}
+
+function isVariantAllowed(
+	variant: AvailableProductVariant,
+	activePlanRenewalInterval: number | undefined,
+	isProductAnUpgrade: boolean
+): boolean {
+	// If this is a plan, does the site currently own a plan? If so, is this an
+	// upgrade to a higher plan level? If so, is the term of the variant lower
+	// than the term of the currently owned plan? If so, do not allow the
+	// variant. That is, do not allow variants which are upgrades that are also
+	// term length downgrades.
+	if ( ! activePlanRenewalInterval || activePlanRenewalInterval < 1 || ! isProductAnUpgrade ) {
+		return true;
+	}
+	const variantRenewalInterval = getTermDuration( variant.plan.term );
+	if ( activePlanRenewalInterval <= variantRenewalInterval ) {
+		return true;
+	}
+	debug(
+		'filtering out plan variant',
+		variant,
+		'with interval',
+		variantRenewalInterval,
+		'because it is a downgrade from',
+		activePlanRenewalInterval
+	);
+	return false;
 }
 
 function VariantPrice( { variant }: { variant: AvailableProductVariant } ) {
