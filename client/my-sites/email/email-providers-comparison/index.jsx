@@ -154,6 +154,12 @@ class EmailProvidersComparison extends React.Component {
 		page( emailManagementForwarding( selectedSite.slug, selectedDomainName, currentRoute ) );
 	};
 
+	isUpgrading = () => {
+		const { domain } = this.props;
+
+		return hasEmailForwards( domain );
+	};
+
 	onTitanMailboxesChange = ( updatedMailboxes ) =>
 		this.setState( { titanMailboxes: updatedMailboxes } );
 
@@ -281,7 +287,7 @@ class EmailProvidersComparison extends React.Component {
 	renderEmailForwardingCard() {
 		const { domain, translate } = this.props;
 
-		if ( hasEmailForwards( domain ) ) {
+		if ( this.isUpgrading( domain ) ) {
 			return null;
 		}
 
@@ -329,6 +335,7 @@ class EmailProvidersComparison extends React.Component {
 			},
 			comment: '{{price/}} is the formatted price, e.g. $20',
 		} );
+
 		const discount = hasDiscount( gSuiteProduct )
 			? translate( 'First year %(discountedPrice)s', {
 					args: {
@@ -337,6 +344,7 @@ class EmailProvidersComparison extends React.Component {
 					comment: '%(discountedPrice)s is a formatted price, e.g. $75',
 			  } )
 			: null;
+
 		const additionalPriceInformation = translate( '%(price)s billed annually', {
 			args: {
 				price: getAnnualPrice( gSuiteProduct?.cost ?? null, currencyCode ),
@@ -349,6 +357,20 @@ class EmailProvidersComparison extends React.Component {
 			( this.state.googleUsers ?? [] ).length === 0
 				? newUsers( selectedDomainName )
 				: this.state.googleUsers;
+
+		const buttonLabel = this.isUpgrading( domain )
+			? translate( 'Upgrade to %(googleMailService)s', {
+					args: {
+						googleMailService: getGoogleMailServiceFamily(),
+					},
+					comment: '%(googleMailService)s can be either "G Suite" or "Google Workspace"',
+			  } )
+			: translate( 'Add %(googleMailService)s', {
+					args: {
+						googleMailService: getGoogleMailServiceFamily(),
+					},
+					comment: '%(googleMailService)s can be either "G Suite" or "Google Workspace"',
+			  } );
 
 		const formFields = domain ? (
 			<FormFieldset>
@@ -367,12 +389,7 @@ class EmailProvidersComparison extends React.Component {
 						busy={ this.state.addingToCart }
 						onClick={ this.onGoogleConfirmNewUsers }
 					>
-						{ translate( 'Add %(googleMailService)s', {
-							args: {
-								googleMailService: getGoogleMailServiceFamily(),
-							},
-							comment: '%(googleMailService)s can be either "G Suite" or "Google Workspace"',
-						} ) }
+						{ buttonLabel }
 					</Button>
 				</GSuiteNewUserList>
 			</FormFieldset>
@@ -394,12 +411,7 @@ class EmailProvidersComparison extends React.Component {
 				onExpandedChange={ this.onExpandedStateChange }
 				onButtonClick={ this.onGoogleConfirmNewUsers }
 				showExpandButton={ this.isDomainEligibleForEmail( domain ) }
-				expandButtonLabel={ translate( 'Add %(googleMailService)s', {
-					args: {
-						googleMailService: getGoogleMailServiceFamily(),
-					},
-					comment: '%(googleMailService)s can be either "G Suite" or "Google Workspace"',
-				} ) }
+				expandButtonLabel={ buttonLabel }
 				features={ getGoogleFeatures() }
 			/>
 		);
@@ -424,9 +436,26 @@ class EmailProvidersComparison extends React.Component {
 				icon="my-sites"
 			/>
 		);
+
 		const poweredByTitan = (
 			<img src={ poweredByTitanLogo } alt={ translate( 'Powered by Titan' ) } />
 		);
+
+		const buttonLabel = this.isUpgrading( domain )
+			? translate( 'Upgrade to %(titanProductName)s', {
+					args: {
+						titanProductName: getTitanProductName(),
+					},
+					comment:
+						'%(titanProductName) is the name of the product, which should be "Professional Email" translated',
+			  } )
+			: translate( 'Add %(titanProductName)s', {
+					args: {
+						titanProductName: getTitanProductName(),
+					},
+					comment:
+						'%(titanProductName) is the name of the product, which should be "Professional Email" translated',
+			  } );
 
 		const formFields = (
 			<TitanNewMailboxList
@@ -443,13 +472,7 @@ class EmailProvidersComparison extends React.Component {
 					busy={ this.state.addingToCart }
 					onClick={ this.onTitanConfirmNewMailboxes }
 				>
-					{ translate( 'Add %(titanProductName)s', {
-						args: {
-							titanProductName: getTitanProductName(),
-						},
-						comment:
-							'%(titanProductName) is the name of the product, which should be "Professional Email" translated',
-					} ) }
+					{ buttonLabel }
 				</Button>
 			</TitanNewMailboxList>
 		);
@@ -469,13 +492,7 @@ class EmailProvidersComparison extends React.Component {
 				discount={ discount }
 				formFields={ formFields }
 				showExpandButton={ this.isDomainEligibleForEmail( domain ) }
-				expandButtonLabel={ translate( 'Add %(titanProductName)s', {
-					args: {
-						titanProductName: getTitanProductName(),
-					},
-					comment:
-						'%(titanProductName) is the name of the product, which should be "Professional Email" translated',
-				} ) }
+				expandButtonLabel={ buttonLabel }
 				features={ getTitanFeatures() }
 			/>
 		);
@@ -502,7 +519,7 @@ class EmailProvidersComparison extends React.Component {
 			comment: '%(domainName)s is the domain name, e.g example.com',
 		};
 
-		const title = hasEmailForwards( domain )
+		const title = this.isUpgrading( domain )
 			? translate( 'Upgrade to a hosted email' )
 			: translate( 'Add email' );
 
@@ -517,7 +534,7 @@ class EmailProvidersComparison extends React.Component {
 				<PromoCard
 					isPrimary
 					title={
-						hasEmailForwards( domain )
+						this.isUpgrading( domain )
 							? translate( 'Upgrade to start sending emails from %(domainName)s', translateArgs )
 							: translate( 'Get your own @%(domainName)s email address', translateArgs )
 					}
@@ -525,7 +542,7 @@ class EmailProvidersComparison extends React.Component {
 					className="email-providers-comparison__action-panel"
 				>
 					<p>
-						{ hasEmailForwards( domain )
+						{ this.isUpgrading( domain )
 							? translate( 'Pick from one of our flexible options to unlock full email features.' )
 							: translate(
 									'Pick one of our flexible options to connect your domain with email ' +
