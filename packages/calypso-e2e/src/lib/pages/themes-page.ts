@@ -1,9 +1,4 @@
 /**
- * External dependencies
- */
-import assert from 'assert';
-
-/**
  * Internal dependencies
  */
 import { BaseContainer } from '../base-container';
@@ -53,23 +48,31 @@ export class ThemesPage extends BaseContainer {
 	}
 
 	/**
-	 * Filters the themes on page by clicking on the selector passed in as argument.
+	 * Filters the themes on page by type.
 	 *
 	 * @param {string} type Pre-defined types of themes.
 	 * @returns {Promise<void>} No return value.
+	 * @throws {Error} If selected state of the theme filter button could not be confirmed.
 	 */
 	async filterThemes( type: 'All' | 'Free' | 'Premium' ): Promise< void > {
+		// Click the 'Show all themes' button at bottom of gallery to expose the theme toolbar.
 		await this.page.click( selectors.showAllThemesButton );
 		const searchToolbar = await this.page.waitForSelector( selectors.searchToolbar );
+
+		// Retrive the target button.
 		const button = await searchToolbar.waitForSelector(
 			`a[data-e2e-value=${ type.toLowerCase() }]`
 		);
 		await button.click();
+
 		// This will wait for all placeholder classes to return to hidden state.
 		await this.page.waitForSelector( selectors.placeholder, { state: 'hidden' } );
+
 		// Verify that filter has been successfully applied.
 		const isSelected = await button.getAttribute( 'aria-checked' );
-		assert.strictEqual( isSelected, 'true' );
+		if ( ! isSelected ) {
+			throw new Error( `Failed to confirm the ${ type } button was clicked.` );
+		}
 	}
 
 	/**
