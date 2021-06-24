@@ -27,7 +27,16 @@ export class LoginPage extends BaseContainer {
 	 * @param {Page} page Playwright page on which actions are executed.
 	 */
 	constructor( page: Page ) {
-		super( page );
+		super( page, selectors.loginContainer );
+	}
+
+	/**
+	 * Post-initialization steps.
+	 */
+	async _postInit(): Promise< void > {
+		await this.page.waitForLoadState( 'networkidle' );
+		const container = await this.page.waitForSelector( selectors.loginContainer );
+		await container.waitForElementState( 'stable' );
 	}
 
 	/**
@@ -37,12 +46,9 @@ export class LoginPage extends BaseContainer {
 	 * @param {string} param0.username Username of the user.
 	 * @param {string} param0.password Password of the user.
 	 * @returns {Promise<void>} No return value.
+	 * @throws {Error} If the log in process was unsuccessful for any reason.
 	 */
 	async login( { username, password }: { username: string; password: string } ): Promise< void > {
-		await this.page.waitForLoadState( 'load' );
-		const container = await this.page.waitForSelector( selectors.loginContainer );
-		await container.waitForElementState( 'stable' );
-
 		const alreadyLoggedIn = await this.page.$( selectors.changeAccountButton );
 		if ( alreadyLoggedIn ) {
 			console.log( 'already logged in, selecting "change account' );
