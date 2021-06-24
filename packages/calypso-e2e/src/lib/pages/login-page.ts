@@ -40,8 +40,8 @@ export class LoginPage extends BaseContainer {
 	 * @throws {Error} If the log in process was unsuccessful for any reason.
 	 */
 	async login( { username, password }: { username: string; password: string } ): Promise< void > {
-		const container = await this.page.waitForSelector( selectors.loginContainer );
-		await container.waitForElementState( 'stable' );
+		await this.page.waitForLoadState( 'load' );
+		await this.page.waitForSelector( selectors.loginContainer );
 
 		const alreadyLoggedIn = await this.page.$( selectors.changeAccountButton );
 		if ( alreadyLoggedIn ) {
