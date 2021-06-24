@@ -42,8 +42,10 @@ export async function start(): Promise< Page > {
  *
  * @returns {Promise<Page>} New Page instance.
  */
-export async function launchPage(): Promise< Page > {
-	const browserContext = await launchBrowserContext();
+export async function launchPage( options?: {
+	[ key: string ]: number | string;
+} ): Promise< Page > {
+	const browserContext = await launchBrowserContext( options );
 	return await browserContext.newPage();
 }
 
@@ -57,7 +59,9 @@ export async function launchPage(): Promise< Page > {
  *
  * @returns {Promise<BrowserContext>} New BrowserContext instance.
  */
-export async function launchBrowserContext(): Promise< BrowserContext > {
+export async function launchBrowserContext( options?: {
+	storageStatePath?: string;
+} ): Promise< BrowserContext > {
 	// If no existing instance of a Browser, then launch a new instance.
 	if ( ! browser ) {
 		browser = await launchBrowser();
@@ -69,17 +73,25 @@ export async function launchBrowserContext(): Promise< BrowserContext > {
 	const timestamp = getDateString();
 	const userAgent = `user-agent=Mozilla/5.0 (wp-e2e-tests) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${ await browser.version() } Safari/537.36`;
 
-	// Generate a new BrowserContext.
-	return await browser.newContext( {
+	let params = {
 		viewport: null, // Do not override window size set in the browser launch parameters.
 		recordVideo: { dir: videoDir, size: { width: dimension.width, height: dimension.height } },
 		userAgent: userAgent,
 		logger: {
-			isEnabled: ( name ) => name === 'api',
-			log: ( name, severity, message ) =>
+			isEnabled: ( name: string ) => name === 'api',
+			log: ( name: string, severity: string, message: string ) =>
 				writeLog( { name: name, severity: severity, message: message }, timestamp ),
 		},
-	} );
+	};
+
+	if ( options?.storageStatePath ) {
+		Object.assign( params, { storageState: options.storageStatePath } );
+	}
+
+	console.log( params );
+
+	// Generate a new BrowserContext.
+	return await browser.newContext( params );
 }
 
 /**
@@ -137,6 +149,13 @@ export async function close(): Promise< void > {
 		console.log( 'Browser instance was not found.' );
 		return;
 	}
+}
+
+export async function saveStorageState(
+	page: Page,
+	filepath: string = 'state.json'
+): Promise< void > {
+	await page.context().storageState( { path: filepath } );
 }
 
 /**

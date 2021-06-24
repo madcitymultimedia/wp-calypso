@@ -4,6 +4,7 @@
 import assert from 'assert';
 import {
 	DataHelper,
+	BrowserManager,
 	LoginFlow,
 	SidebarComponent,
 	MyHomePage,
@@ -12,15 +13,28 @@ import {
 } from '@automattic/calypso-e2e';
 
 describe( DataHelper.createSuiteTitle( 'Support' ), function () {
-	describe( 'Search for a support topic then close popover', function () {
+	before( async function () {
+		const loginFlow = new LoginFlow( this.page );
+		await loginFlow.logIn();
+		await BrowserManager.saveStorageState( this.page, '/tmp/state.json' );
+		console.log( await this.page.context().cookies() );
+		await this.page.context().close();
+		const context = await BrowserManager.launchBrowserContext( {
+			storageStatePath: '/tmp/state.json',
+		} );
+		this.page = await context.newPage();
+	} );
+
+	describe.only( 'Search for a support topic then close popover', function () {
 		let supportComponent;
 
-		it( 'Log in', async function () {
-			const loginFlow = new LoginFlow( this.page );
-			await loginFlow.logIn();
-		} );
+		// it( 'Log in', async function () {
+		// 	const loginFlow = new LoginFlow( this.page );
+		// 	await loginFlow.logIn();
+		// } );
 
 		it( 'Open Settings page', async function () {
+			await this.page.goto( 'https://wordpress.com' );
 			await MyHomePage.Expect( this.page );
 			const sidebarComponent = await SidebarComponent.Expect( this.page );
 			await sidebarComponent.gotoMenu( { item: 'Settings' } );
