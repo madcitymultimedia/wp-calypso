@@ -10,7 +10,7 @@ import { toTitleCase } from '../../data-helper';
 import { Page } from 'playwright';
 
 const selectors = {
-	content: '#primary',
+	// Nav tabs
 	navtabsList: '.section-nav-tabs__list',
 
 	// Traffic tab
@@ -32,16 +32,7 @@ export class MarketingPage extends BaseContainer {
 	 * @param {Page} page Underlying page on which the actions take place.
 	 */
 	constructor( page: Page ) {
-		super( page, selectors.content );
-	}
-
-	/**
-	 * Post-initialization steps when creating an instance of this object.
-	 *
-	 * @returns {Promise<void>} No return value.
-	 */
-	async _postInit(): Promise< void > {
-		await this.page.waitForSelector( selectors.navtabsList );
+		super( page );
 	}
 
 	/**
@@ -51,6 +42,7 @@ export class MarketingPage extends BaseContainer {
 	 * @returns {Promise<void>} No return value.
 	 */
 	async clickTabItem( name: string ): Promise< void > {
+		await this.page.waitForSelector( selectors.navtabsList );
 		const sanitizedName = toTitleCase( [ name ] );
 
 		await this.page.click( `text=${ sanitizedName }` );
@@ -85,6 +77,6 @@ export class MarketingPage extends BaseContainer {
 	 */
 	async closeSEOPreview(): Promise< void > {
 		await this.page.click( selectors.seoPreviewPaneCloseButton );
-		await this.page.waitForSelector( selectors.content );
+		await this.page.waitForSelector( selectors.seoPreviewButton );
 	}
 }
