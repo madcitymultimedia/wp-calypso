@@ -1,4 +1,5 @@
 export { getEmailForwardAddress } from './get-email-forward-address';
+export { getMailboxAddress } from './get-mailbox-address';
 export { hasGoogleAccountTOSWarning } from './has-google-account-t-o-s-warning';
 export { hasUnusedMailboxWarning } from './has-unused-mailbox-warning';
 export { hasUnverifiedEmailForward } from './has-unverified-email-forward';

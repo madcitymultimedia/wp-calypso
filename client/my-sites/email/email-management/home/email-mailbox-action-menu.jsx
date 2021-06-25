@@ -13,6 +13,7 @@ import { useTranslate } from 'i18n-calypso';
 import EllipsisMenu from 'calypso/components/ellipsis-menu';
 import {
 	getEmailForwardAddress,
+	getMailboxAddress,
 	hasGoogleAccountTOSWarning,
 	isEmailUserAdmin,
 } from 'calypso/lib/emails';
@@ -46,6 +47,7 @@ import { removeEmailForward } from 'calypso/state/email-forwarding/actions';
 import titanCalendarIcon from 'calypso/assets/images/email-providers/titan/services/calendar.svg';
 import titanContactsIcon from 'calypso/assets/images/email-providers/titan/services/contacts.svg';
 import titanMailIcon from 'calypso/assets/images/email-providers/titan/services/mail.svg';
+import wp from 'calypso/lib/wp';
 
 const removeEmailForwardMailbox = ( { dispatch, mailbox } ) => {
 	recordTracksEvent( 'calypso_email_management_email_forwarding_delete_click', {
@@ -57,15 +59,27 @@ const removeEmailForwardMailbox = ( { dispatch, mailbox } ) => {
 	dispatch( removeEmailForward( mailbox.domain, mailbox.mailbox ) );
 };
 
+const removeTitanMailbox = ( mailbox ) => {
+	recordTracksEvent( 'calypso_email_management_titan_delete_click', {
+		destination: getMailboxAddress( mailbox ),
+		domain_name: mailbox.domain,
+		mailbox: mailbox.mailbox,
+	} );
+
+	wp.undocumented().deleteTitanMailbox( mailbox.domain, mailbox.mailbox );
+};
+
 /**
  * Returns the available menu items for Titan Emails
  *
  * @param {Object} titanMenuParams The argument for this function.
- * @param {string} titanMenuParams.email The email address of the Titan account
- * @param {Function} titanMenuParams.translate The translate function
+ * @param {Object} titanMenuParams.mailbox The mailbox object.
+ * @param {Function} titanMenuParams.translate The translate function.
  * @returns Array of menu items
  */
-const getTitanMenuItems = ( { email, translate } ) => {
+const getTitanMenuItems = ( { mailbox, translate } ) => {
+	const email = getMailboxAddress( mailbox );
+
 	return [
 		{
 			href: getTitanEmailUrl( email ),
@@ -91,6 +105,17 @@ const getTitanMenuItems = ( { email, translate } ) => {
 				comment: 'View the Contacts application for Titan',
 			} ),
 		},
+		{
+			isInternalLink: true,
+			materialIcon: 'delete',
+			onClick: () => {
+				removeTitanMailbox( mailbox );
+			},
+			key: `remove_mailbox:${ mailbox.mailbox }`,
+			title: translate( 'Remove mailbox', {
+				comment: 'Remove a mailbox',
+			} ),
+		},
 	];
 };
 
@@ -99,15 +124,16 @@ const getTitanMenuItems = ( { email, translate } ) => {
  *
  * @param {Object} gSuiteMenuParams Parameter for this function.
  * @param {Object} gSuiteMenuParams.account The account the current mailbox is linked to.
- * @param {string} gSuiteMenuParams.email The full email address for the current mailbox.
  * @param {Object} gSuiteMenuParams.mailbox The mailbox object.
  * @param {Function} gSuiteMenuParams.translate The translate function.
  * @returns {Array|null} Returns an array of menu items or null if no items should be shown.
  */
-const getGSuiteMenuItems = ( { account, email, mailbox, translate } ) => {
+const getGSuiteMenuItems = ( { account, mailbox, translate } ) => {
 	if ( hasGoogleAccountTOSWarning( account ) ) {
 		return null;
 	}
+
+	const email = getMailboxAddress( mailbox );
 
 	return [
 		{
@@ -179,15 +205,13 @@ const EmailMailboxActionMenu = ( { account, domain, mailbox } ) => {
 	const dispatch = useDispatch();
 	const translate = useTranslate();
 
-	const email = `${ mailbox.mailbox }@${ mailbox.domain }`;
-
 	const getMenuItems = () => {
 		if ( hasTitanMailWithUs( domain ) ) {
-			return getTitanMenuItems( { email, translate } );
+			return getTitanMenuItems( { mailbox, translate } );
 		}
 
 		if ( hasGSuiteWithUs( domain ) ) {
-			return getGSuiteMenuItems( { account, email, mailbox, translate } );
+			return getGSuiteMenuItems( { account, mailbox, translate } );
 		}
 
 		if ( hasEmailForwards( domain ) ) {

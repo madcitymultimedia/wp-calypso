@@ -800,10 +800,10 @@ Undocumented.prototype.getTitanControlPanelIframeURL = function ( emailAccountId
 };
 
 /**
- * Checks the availability of a Professional Email(Titan) mailbox
+ * Checks the availability of a Professional Email(i.e. Titan) mailbox
  *
  * @param domain The domain name to check the mailbox name against
- * @param mailbox The mailbox username to check for availability
+ * @param mailbox The mailbox name to check for availability
  * @param fn The callback function
  */
 Undocumented.prototype.getTitanMailboxAvailability = function ( domain, mailbox, fn ) {
@@ -819,18 +819,21 @@ Undocumented.prototype.getTitanMailboxAvailability = function ( domain, mailbox,
 };
 
 /**
- * Deletes a mailbox from a Professional Email(Titan) account
+ * Deletes a mailbox from a Professional Email(i.e. Titan) account
  *
  * @param domain The domain name of the account
- * @param mailbox The mailbox username to delete
+ * @param mailbox The mailbox name to delete
  * @param fn The callback function
  */
 Undocumented.prototype.deleteTitanMailbox = function ( domain, mailbox, fn ) {
-	return this.wpcom.req.delete(
+	debug( 'DELETE: /emails/titan/:domain/mailbox/:mailbox', { domain, mailbox } );
+
+	return this.wpcom.req.get(
 		{
 			path: `/emails/titan/${ encodeURIComponent( domain ) }/mailbox/${ encodeURIComponent(
 				mailbox
 			) }`,
+			method: 'DELETE',
 			apiNamespace: 'wpcom/v2',
 		},
 		fn
